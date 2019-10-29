@@ -6,6 +6,28 @@ app.use(express.json());
 
 const projects = [];
 
+//middleware check if the project exist
+function checkProject(req, res, next) {
+  const { id } = req.params;
+  const project = projects.find(p => p.id == id);
+
+  if (!project) {
+    return res.status(400).json({ error: 'Project does not exists' });
+  }
+
+  return next();
+}
+
+//middleware for logging
+function logRequests(req, res, next) {
+
+  console.count("Número de requisições");
+
+  return next();
+}
+
+server.use(logRequests);
+
 // route to list all projects
 app.get('/projects', (req,res)=>{
   return res.json(projects);
@@ -26,7 +48,7 @@ app.post('/projects', (req,res)=>{
 });
 
 // route to update a project title
-app.put('/projects/:id', (req,res)=>{
+app.put('/projects/:id', checkProject, (req,res)=>{
   const { id } = req.params;
   const { title } = req.body;
 
@@ -38,7 +60,7 @@ app.put('/projects/:id', (req,res)=>{
 });
 
 //route to delete a project
-app.delete('/projects/:id', (req,res)=>{
+app.delete('/projects/:id', checkProject, (req,res)=>{
   const { id } = req.params;
 
   const projectIndex = projects.findIndex(p => p.id == id);
@@ -49,7 +71,7 @@ app.delete('/projects/:id', (req,res)=>{
 });
 
 // route to add a task in any project
-app.post('/projects/:id/tasks', (req,res)=>{
+app.post('/projects/:id/tasks', checkProject, (req,res)=>{
   const { id } = req.params;
   const { title } = req.body;
 
