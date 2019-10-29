@@ -2,25 +2,37 @@ const express = require('express');
 
 const app = express();
 
+const projects = [];
+
 // route to list all projects
 app.get('/project', (req,res)=>{
-  res.json({
-    message: "Hello World"
-  })
+  return res.json(projects);
 });
 
 //route to insert a project
 app.post('/project', (req,res)=>{
-  res.json({
-    message: "Hello World"
-  })
+  const { id, title } = req.body;
+
+  const project = {
+    id,
+    title,
+    tasks: []
+  };
+  projects.push(project);
+
+  return res.json(project);
 });
 
-// route to update a project
+// route to update a project title
 app.put('/project/:id', (req,res)=>{
-  res.json({
-    message: "Hello World"
-  })
+  const { id } = req.params;
+  const { title } = req.body;
+
+  const project = projects.find(p => p.id == id);
+
+  project.title = title;
+
+  return res.json(project);
 });
 
 //route to delete a project
