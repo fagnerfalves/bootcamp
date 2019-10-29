@@ -2,15 +2,17 @@ const express = require('express');
 
 const app = express();
 
+app.use(express.json());
+
 const projects = [];
 
 // route to list all projects
-app.get('/project', (req,res)=>{
+app.get('/projects', (req,res)=>{
   return res.json(projects);
 });
 
 //route to insert a project
-app.post('/project', (req,res)=>{
+app.post('/projects', (req,res)=>{
   const { id, title } = req.body;
 
   const project = {
@@ -24,7 +26,7 @@ app.post('/project', (req,res)=>{
 });
 
 // route to update a project title
-app.put('/project/:id', (req,res)=>{
+app.put('/projects/:id', (req,res)=>{
   const { id } = req.params;
   const { title } = req.body;
 
@@ -36,17 +38,26 @@ app.put('/project/:id', (req,res)=>{
 });
 
 //route to delete a project
-app.delete('/project/:id', (req,res)=>{
-  res.json({
-    message: "Hello World"
-  })
+app.delete('/projects/:id', (req,res)=>{
+  const { id } = req.params;
+
+  const projectIndex = projects.findIndex(p => p.id == id);
+
+  projects.splice(projectIndex, 1);
+
+  return res.send();
 });
 
 // route to add a task in any project
-app.post('/project/:id/tasks', (req,res)=>{
-  res.json({
-    message: "Hello World"
-  })
+app.post('/projects/:id/tasks', (req,res)=>{
+  const { id } = req.params;
+  const { title } = req.body;
+
+  const project = projects.find(p => p.id == id);
+
+  project.tasks.push(title);
+
+  return res.json(project);
 });
 
 
